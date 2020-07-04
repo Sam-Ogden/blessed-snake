@@ -10,7 +10,7 @@
     "bin"
   ],
   "scripts": {
-    "start": "node src/index",
+    "start": "yarn build && node bin/index",
     "build": "babel src -d bin",
     "release": "yarn build && yarn publish"
   },

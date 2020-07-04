@@ -125,9 +125,9 @@ var die = function die(snake) {
   });
   ateSelf && process.exit(0);
   head.x >= 10 && process.exit(0);
-  head.x <= 0 && process.exit(0);
+  head.x < 0 && process.exit(0);
   head.y >= 10 && process.exit(0);
-  head.y <= 0 && process.exit(0);
+  head.y < 0 && process.exit(0);
 };
 
 var App = function App(_ref3) {

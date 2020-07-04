@@ -58,9 +58,9 @@ const die = (snake) => {
   });
   ateSelf && process.exit(0);
   head.x >= 10 && process.exit(0);
-  head.x <= 0 && process.exit(0);
+  head.x < 0 && process.exit(0);
   head.y >= 10 && process.exit(0);
-  head.y <= 0 && process.exit(0);
+  head.y < 0 && process.exit(0);
 };
 
 const App = ({ difficulty = "hard" }) => {
@@ -116,7 +116,7 @@ const App = ({ difficulty = "hard" }) => {
       }}
     >
       <box width='80%' top='0' left='0'>
-        ~~~ Snake Game | Sam Ogden ~~~
+        ~~~ Snake Game ~~~
       </box>
       <box width='20%' top='0' right='0'>
         <box width='50%' top='0' right='15'>
