@@ -30,7 +30,6 @@
     "@babel/preset-react": "^7.10.4",
     "@babel/register": "^7.10.4",
     "blessed": "^0.1.81",
-    "blessed-snake": "^0.0.7",
     "react": "^16.13.1",
     "react-blessed": "^0.6.2"
   },

@@ -990,61 +990,6 @@ bindings@^1.5.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
-blessed-snake@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/blessed-snake/-/blessed-snake-0.0.2.tgz#ef3b9c6bd5dc4755b30c1babec3d9aaa3041df1c"
-  integrity sha512-jGEMDyjxDxrjkV40BXjCmAIxMMlKO/WMuQqsOA/5v9znYuu6E6xOMX3ke3PutLFOy+ltBiuop2gXcTVokFFc/w==
-  dependencies:
-    "@babel/core" "^7.10.4"
-    "@babel/preset-env" "^7.10.4"
-    "@babel/preset-react" "^7.10.4"
-    "@babel/register" "^7.10.4"
-    blessed "^0.1.81"
-    react "^16.13.1"
-    react-blessed "^0.6.2"
-
-blessed-snake@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/blessed-snake/-/blessed-snake-0.0.5.tgz#9f17a99659f358466f760eced1036f339ead51d2"
-  integrity sha512-OIXqbOT+rEp4hvinJkS+KDiUF0fiqwqyvhdUNHWJhv6ab/TK/DebCU9YA0GGEZX1+0WdWRxcypMxC/SjdrwmhQ==
-  dependencies:
-    "@babel/core" "^7.10.4"
-    "@babel/preset-env" "^7.10.4"
-    "@babel/preset-react" "^7.10.4"
-    "@babel/register" "^7.10.4"
-    blessed "^0.1.81"
-    blessed-snake "^0.0.2"
-    react "^16.13.1"
-    react-blessed "^0.6.2"
-
-blessed-snake@^0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/blessed-snake/-/blessed-snake-0.0.6.tgz#d320b573e294dd146d1197e7f9fe74d823304549"
-  integrity sha512-OdGSKbuQ0LREqnfpfas/PO+gZbHjWvuiThqRJv6NzIhiTYKzjktxbpjM+Tbp9nGYe2R4JG0yAPR3SvWM3Shqrg==
-  dependencies:
-    "@babel/core" "^7.10.4"
-    "@babel/preset-env" "^7.10.4"
-    "@babel/preset-react" "^7.10.4"
-    "@babel/register" "^7.10.4"
-    blessed "^0.1.81"
-    blessed-snake "^0.0.5"
-    react "^16.13.1"
-    react-blessed "^0.6.2"
-
-blessed-snake@^0.0.7:
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/blessed-snake/-/blessed-snake-0.0.7.tgz#d15af7405d7e19cbf38cf2886f12cf737a776602"
-  integrity sha512-o5TLSbM2yZPKK7i7tN41F20q5ALdGv7Dv9J+Gwgw2aiDUlhtsJbM89aAjxn7yYMWR0zQ+nhNV8Ik1dFUpXg1GA==
-  dependencies:
-    "@babel/core" "^7.10.4"
-    "@babel/preset-env" "^7.10.4"
-    "@babel/preset-react" "^7.10.4"
-    "@babel/register" "^7.10.4"
-    blessed "^0.1.81"
-    blessed-snake "^0.0.6"
-    react "^16.13.1"
-    react-blessed "^0.6.2"
-
 blessed@^0.1.81:
   version "0.1.81"
   resolved "https://registry.yarnpkg.com/blessed/-/blessed-0.1.81.tgz#f962d687ec2c369570ae71af843256e6d0ca1129"
