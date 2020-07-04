@@ -50,31 +50,38 @@ const randomLocation = (n) => {
   return { x, y };
 };
 
-const die = (snake, n) => {
+const hasDied = (snake, n) => {
   const head = snake[snake.length - 1];
   const ateSelf = snake.some(({ x, y }, i) => {
     if (i === snake.length - 1) return false;
     return head.x === x && head.y === y;
   });
-  ateSelf && process.exit(0);
-  head.x >= n && process.exit(0);
-  head.x < 0 && process.exit(0);
-  head.y >= n && process.exit(0);
-  head.y < 0 && process.exit(0);
+  return (
+    ateSelf || ateSelf || head.x >= n || head.x < 0 || head.y >= n || head.y < 0
+  );
 };
 
 const App = ({ difficulty = "hard", size = 20 }) => {
+  const [gameOver, setGameOver] = useState(false);
   const [direction, setDirection] = useState(ARROWS.down);
   const [score, setScore] = useState(0);
   const [fruit, setFruit] = useState(randomLocation(size));
   const [snake, setSnake] = useState(initialSnake);
   const gameClock = useRef(null);
 
+  const restart = () => {
+    setSnake(initialSnake);
+    setScore(0);
+    setDirection(ARROWS.down);
+    setGameOver(false);
+    setFruit(randomLocation(size));
+  };
   const tick = () => {
     // snake state variable never seems to change, so use the
     // value passed in. Bug in react-blessed renderer?
     setSnake((s) => {
-      die(s);
+      const died = hasDied(s, size);
+      died && setGameOver(true);
       const newSnake = [...s];
       const head = { ...s[s.length - 1] };
       const newHead = nextHead(head, direction);
@@ -115,37 +122,43 @@ const App = ({ difficulty = "hard", size = 20 }) => {
         fg: "#2A223A",
       }}
     >
-      <box width='80%' top='0' left='0'>
-        ~~~ Snake Game ~~~
-      </box>
-      <box width='20%' top='0' right='0'>
-        <box width='50%' top='0' right='15'>
-          Score
-        </box>
-        <box width='50%' top='0' right='5'>
-          {score}
-        </box>
-      </box>
-      <box
-        top='center'
-        left='center'
-        width='90%'
-        height='90%'
-        border={{ type: "line" }}
-        style={{
-          border: { fg: "red" },
-        }}
-      >
-        <Fruit {...fruit} size={Math.floor(100 / size)} />
-        {snake.map((part, i) => (
-          <BodyPart
-            {...part}
-            isHead={i === snake.length - 1}
-            key={i}
-            size={Math.floor(100 / size)}
-          />
-        ))}
-      </box>
+      {!gameOver ? (
+        <>
+          <box width='80%' top='0' left='0'>
+            ~~~ Snake Game ~~~
+          </box>
+          <box width='20%' top='0' right='0'>
+            <box width='50%' top='0' right='15'>
+              Score
+            </box>
+            <box width='50%' top='0' right='5'>
+              {score}
+            </box>
+          </box>
+          <box
+            top='center'
+            left='center'
+            width='90%'
+            height='90%'
+            border={{ type: "line" }}
+            style={{
+              border: { fg: "red" },
+            }}
+          >
+            <Fruit {...fruit} size={Math.floor(100 / size)} />
+            {snake.map((part, i) => (
+              <BodyPart
+                {...part}
+                isHead={i === snake.length - 1}
+                key={i}
+                size={Math.floor(100 / size)}
+              />
+            ))}
+          </box>
+        </>
+      ) : (
+        <GameOver score={score} restart={restart} />
+      )}
     </element>
   );
 };
@@ -175,6 +188,18 @@ const Fruit = ({ x, y, size }) => {
         bg: "green",
       }}
     ></box>
+  );
+};
+
+const GameOver = ({ restart, score }) => {
+  return (
+    <box top='center' left='center'>
+      GAME OVER - Score:
+      <box top={1}>{score}</box>
+      <button mouse top={2} height={50} width={"100%"} onPress={restart}>
+        -- Click to play again --
+      </button>
+    </box>
   );
 };
 

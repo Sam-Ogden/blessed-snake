@@ -115,7 +115,7 @@ var randomLocation = function randomLocation(n) {
   };
 };
 
-var die = function die(snake, n) {
+var hasDied = function hasDied(snake, n) {
   var head = snake[snake.length - 1];
   var ateSelf = snake.some(function (_ref2, i) {
     var x = _ref2.x,
@@ -123,11 +123,7 @@ var die = function die(snake, n) {
     if (i === snake.length - 1) return false;
     return head.x === x && head.y === y;
   });
-  ateSelf && process.exit(0);
-  head.x >= n && process.exit(0);
-  head.x < 0 && process.exit(0);
-  head.y >= n && process.exit(0);
-  head.y < 0 && process.exit(0);
+  return ateSelf || ateSelf || head.x >= n || head.x < 0 || head.y >= n || head.y < 0;
 };
 
 var App = function App(_ref3) {
@@ -136,33 +132,47 @@ var App = function App(_ref3) {
       _ref3$size = _ref3.size,
       size = _ref3$size === void 0 ? 20 : _ref3$size;
 
-  var _useState = (0, _react.useState)(ARROWS.down),
+  var _useState = (0, _react.useState)(false),
       _useState2 = _slicedToArray(_useState, 2),
-      direction = _useState2[0],
-      setDirection = _useState2[1];
+      gameOver = _useState2[0],
+      setGameOver = _useState2[1];
 
-  var _useState3 = (0, _react.useState)(0),
+  var _useState3 = (0, _react.useState)(ARROWS.down),
       _useState4 = _slicedToArray(_useState3, 2),
-      score = _useState4[0],
-      setScore = _useState4[1];
+      direction = _useState4[0],
+      setDirection = _useState4[1];
 
-  var _useState5 = (0, _react.useState)(randomLocation(size)),
+  var _useState5 = (0, _react.useState)(0),
       _useState6 = _slicedToArray(_useState5, 2),
-      fruit = _useState6[0],
-      setFruit = _useState6[1];
+      score = _useState6[0],
+      setScore = _useState6[1];
 
-  var _useState7 = (0, _react.useState)(initialSnake),
+  var _useState7 = (0, _react.useState)(randomLocation(size)),
       _useState8 = _slicedToArray(_useState7, 2),
-      snake = _useState8[0],
-      setSnake = _useState8[1];
+      fruit = _useState8[0],
+      setFruit = _useState8[1];
+
+  var _useState9 = (0, _react.useState)(initialSnake),
+      _useState10 = _slicedToArray(_useState9, 2),
+      snake = _useState10[0],
+      setSnake = _useState10[1];
 
   var gameClock = (0, _react.useRef)(null);
+
+  var restart = function restart() {
+    setSnake(initialSnake);
+    setScore(0);
+    setDirection(ARROWS.down);
+    setGameOver(false);
+    setFruit(randomLocation(size));
+  };
 
   var tick = function tick() {
     // snake state variable never seems to change, so use the
     // value passed in. Bug in react-blessed renderer?
     setSnake(function (s) {
-      die(s);
+      var died = hasDied(s, size);
+      died && setGameOver(true);
 
       var newSnake = _toConsumableArray(s);
 
@@ -213,7 +223,7 @@ var App = function App(_ref3) {
       bg: "#2A223A",
       fg: "#2A223A"
     }
-  }, /*#__PURE__*/_react["default"].createElement("box", {
+  }, !gameOver ? /*#__PURE__*/_react["default"].createElement(_react["default"].Fragment, null, /*#__PURE__*/_react["default"].createElement("box", {
     width: "80%",
     top: "0",
     left: "0"
@@ -250,7 +260,10 @@ var App = function App(_ref3) {
       key: i,
       size: Math.floor(100 / size)
     }));
-  })));
+  }))) : /*#__PURE__*/_react["default"].createElement(GameOver, {
+    score: score,
+    restart: restart
+  }));
 };
 
 var BodyPart = function BodyPart(_ref5) {
@@ -282,6 +295,23 @@ var Fruit = function Fruit(_ref6) {
       bg: "green"
     }
   });
+};
+
+var GameOver = function GameOver(_ref7) {
+  var restart = _ref7.restart,
+      score = _ref7.score;
+  return /*#__PURE__*/_react["default"].createElement("box", {
+    top: "center",
+    left: "center"
+  }, "GAME OVER - Score:", /*#__PURE__*/_react["default"].createElement("box", {
+    top: 1
+  }, score), /*#__PURE__*/_react["default"].createElement("button", {
+    mouse: true,
+    top: 2,
+    height: 50,
+    width: "100%",
+    onPress: restart
+  }, "-- Click here to play again --"));
 };
 
 var screen = _blessed["default"].screen({
