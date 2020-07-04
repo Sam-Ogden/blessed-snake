@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 import React, { useState, useEffect, useRef } from "react";
 import blessed from "blessed";
 import { render } from "react-blessed";
