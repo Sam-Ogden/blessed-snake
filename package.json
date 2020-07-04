@@ -1,6 +1,6 @@
 {
   "name": "blessed-snake",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Nokia3310",
   "main": "bin/index.js",
   "repository": {
