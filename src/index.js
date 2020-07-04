@@ -15,12 +15,12 @@ const ARROWS = {
 };
 
 const DIFFICULTY = {
-  easy: 1000,
-  normal: 500,
-  hard: 250,
-  insane: 100,
-  imacrazyperson: 50,
-  catreflex: 25,
+  easy: 100,
+  normal: 50,
+  hard: 25,
+  insane: 10,
+  imacrazyperson: 5,
+  catreflex: 3,
 };
 
 const initialSnake = [
@@ -44,29 +44,29 @@ const nextHead = ({ x, y }, direction) => {
   }
 };
 
-const randomLocation = () => {
-  const x = Math.floor(Math.random() * 10);
-  const y = Math.floor(Math.random() * 10);
+const randomLocation = (n) => {
+  const x = Math.floor(Math.random() * n);
+  const y = Math.floor(Math.random() * n);
   return { x, y };
 };
 
-const die = (snake) => {
+const die = (snake, n) => {
   const head = snake[snake.length - 1];
   const ateSelf = snake.some(({ x, y }, i) => {
     if (i === snake.length - 1) return false;
     return head.x === x && head.y === y;
   });
   ateSelf && process.exit(0);
-  head.x >= 10 && process.exit(0);
+  head.x >= n && process.exit(0);
   head.x < 0 && process.exit(0);
-  head.y >= 10 && process.exit(0);
+  head.y >= n && process.exit(0);
   head.y < 0 && process.exit(0);
 };
 
-const App = ({ difficulty = "hard" }) => {
+const App = ({ difficulty = "hard", size = 20 }) => {
   const [direction, setDirection] = useState(ARROWS.down);
   const [score, setScore] = useState(0);
-  const [fruit, setFruit] = useState(randomLocation());
+  const [fruit, setFruit] = useState(randomLocation(size));
   const [snake, setSnake] = useState(initialSnake);
   const gameClock = useRef(null);
 
@@ -80,7 +80,7 @@ const App = ({ difficulty = "hard" }) => {
       const newHead = nextHead(head, direction);
       const ateFruit = newHead.x === fruit.x && newHead.y === fruit.y;
       if (ateFruit) {
-        setFruit(() => randomLocation());
+        setFruit(() => randomLocation(size));
         setScore((s) => s + 1);
       } else {
         newSnake.shift();
@@ -94,7 +94,7 @@ const App = ({ difficulty = "hard" }) => {
     clearInterval(gameClock.current);
     gameClock.current = setInterval(
       tick,
-      DIFFICULTY[difficulty] || DIFFICULTY["hard"]
+      Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"])
     );
     return () => clearInterval(gameClock.current);
   }, [direction]);
@@ -136,60 +136,65 @@ const App = ({ difficulty = "hard" }) => {
           border: { fg: "red" },
         }}
       >
-        <Fruit {...fruit} />
+        <Fruit {...fruit} size={Math.floor(100 / size)} />
         {snake.map((part, i) => (
-          <BodyPart {...part} isHead={i === snake.length - 1} key={i} />
+          <BodyPart
+            {...part}
+            isHead={i === snake.length - 1}
+            key={i}
+            size={Math.floor(100 / size)}
+          />
         ))}
       </box>
     </element>
   );
 };
 
-const BodyPart = ({ x, y, isHead }) => {
+const BodyPart = ({ x, y, isHead, size }) => {
   return (
     <box
-      top={`${y * 10}%`}
-      left={`${x * 10}%`}
-      width='10%'
-      height='10%'
-      border='line'
+      top={`${y * size}%`}
+      left={`${x * size}%`}
+      width={`${size}%`}
+      height={`${size}%`}
       style={{
         bg: isHead ? "#19EBFF" : "#F3EEE3",
-        border: isHead ? { fg: "red" } : { fg: "#F3EEE3" },
       }}
     ></box>
   );
 };
 
-const Fruit = ({ x, y }) => {
+const Fruit = ({ x, y, size }) => {
   return (
     <box
-      top={`${y * 10}%`}
-      left={`${x * 10}%`}
-      width='10%'
-      height='10%'
-      border='line'
+      top={`${y * size}%`}
+      left={`${x * size}%`}
+      width={`${size}%`}
+      height={`${size}%`}
       style={{
         bg: "green",
-        border: { fg: "green" },
       }}
     ></box>
   );
 };
 
 const screen = blessed.screen({
-  autoPadding: true,
+  autoPadding: false,
   fastCSR: true,
   title: "Snake Game!",
 });
 
 screen.key(["escape", "q", "C-c"], () => process.exit(0));
 
-let difficulty;
+let difficulty, size;
+const args = process.argv;
 try {
-  difficulty = process.argv[2].split("--")[1];
+  difficulty = args[args.findIndex((arg) => arg === "--difficulty") + 1];
+  size = args[args.findIndex((arg) => arg === "--size") + 1];
 } catch (e) {
+  console.log(e);
   difficulty = "hard";
+  size = 20;
 } finally {
-  render(<App difficulty={difficulty} />, screen);
+  render(<App difficulty={difficulty} size={size} />, screen);
 }

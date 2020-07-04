@@ -54,12 +54,12 @@ var ARROWS = {
   d: "right"
 };
 var DIFFICULTY = {
-  easy: 1000,
-  normal: 500,
-  hard: 250,
-  insane: 100,
-  imacrazyperson: 50,
-  catreflex: 25
+  easy: 100,
+  normal: 50,
+  hard: 25,
+  insane: 10,
+  imacrazyperson: 5,
+  catreflex: 3
 };
 var initialSnake = [{
   x: 1,
@@ -106,16 +106,16 @@ var nextHead = function nextHead(_ref, direction) {
   }
 };
 
-var randomLocation = function randomLocation() {
-  var x = Math.floor(Math.random() * 10);
-  var y = Math.floor(Math.random() * 10);
+var randomLocation = function randomLocation(n) {
+  var x = Math.floor(Math.random() * n);
+  var y = Math.floor(Math.random() * n);
   return {
     x: x,
     y: y
   };
 };
 
-var die = function die(snake) {
+var die = function die(snake, n) {
   var head = snake[snake.length - 1];
   var ateSelf = snake.some(function (_ref2, i) {
     var x = _ref2.x,
@@ -124,15 +124,17 @@ var die = function die(snake) {
     return head.x === x && head.y === y;
   });
   ateSelf && process.exit(0);
-  head.x >= 10 && process.exit(0);
+  head.x >= n && process.exit(0);
   head.x < 0 && process.exit(0);
-  head.y >= 10 && process.exit(0);
+  head.y >= n && process.exit(0);
   head.y < 0 && process.exit(0);
 };
 
 var App = function App(_ref3) {
   var _ref3$difficulty = _ref3.difficulty,
-      difficulty = _ref3$difficulty === void 0 ? "hard" : _ref3$difficulty;
+      difficulty = _ref3$difficulty === void 0 ? "hard" : _ref3$difficulty,
+      _ref3$size = _ref3.size,
+      size = _ref3$size === void 0 ? 20 : _ref3$size;
 
   var _useState = (0, _react.useState)(ARROWS.down),
       _useState2 = _slicedToArray(_useState, 2),
@@ -144,7 +146,7 @@ var App = function App(_ref3) {
       score = _useState4[0],
       setScore = _useState4[1];
 
-  var _useState5 = (0, _react.useState)(randomLocation()),
+  var _useState5 = (0, _react.useState)(randomLocation(size)),
       _useState6 = _slicedToArray(_useState5, 2),
       fruit = _useState6[0],
       setFruit = _useState6[1];
@@ -171,7 +173,7 @@ var App = function App(_ref3) {
 
       if (ateFruit) {
         setFruit(function () {
-          return randomLocation();
+          return randomLocation(size);
         });
         setScore(function (s) {
           return s + 1;
@@ -187,7 +189,7 @@ var App = function App(_ref3) {
 
   (0, _react.useEffect)(function () {
     clearInterval(gameClock.current);
-    gameClock.current = setInterval(tick, DIFFICULTY[difficulty] || DIFFICULTY["hard"]);
+    gameClock.current = setInterval(tick, Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"]));
     return function () {
       return clearInterval(gameClock.current);
     };
@@ -215,7 +217,7 @@ var App = function App(_ref3) {
     width: "80%",
     top: "0",
     left: "0"
-  }, "~~~ Snake Game | Sam Ogden ~~~"), /*#__PURE__*/_react["default"].createElement("box", {
+  }, "~~~ Snake Game ~~~"), /*#__PURE__*/_react["default"].createElement("box", {
     width: "20%",
     top: "0",
     right: "0"
@@ -240,10 +242,13 @@ var App = function App(_ref3) {
         fg: "red"
       }
     }
-  }, /*#__PURE__*/_react["default"].createElement(Fruit, fruit), snake.map(function (part, i) {
+  }, /*#__PURE__*/_react["default"].createElement(Fruit, _extends({}, fruit, {
+    size: Math.floor(100 / size)
+  })), snake.map(function (part, i) {
     return /*#__PURE__*/_react["default"].createElement(BodyPart, _extends({}, part, {
       isHead: i === snake.length - 1,
-      key: i
+      key: i,
+      size: Math.floor(100 / size)
     }));
   })));
 };
@@ -251,44 +256,36 @@ var App = function App(_ref3) {
 var BodyPart = function BodyPart(_ref5) {
   var x = _ref5.x,
       y = _ref5.y,
-      isHead = _ref5.isHead;
+      isHead = _ref5.isHead,
+      size = _ref5.size;
   return /*#__PURE__*/_react["default"].createElement("box", {
-    top: "".concat(y * 10, "%"),
-    left: "".concat(x * 10, "%"),
-    width: "10%",
-    height: "10%",
-    border: "line",
+    top: "".concat(y * size, "%"),
+    left: "".concat(x * size, "%"),
+    width: "".concat(size, "%"),
+    height: "".concat(size, "%"),
     style: {
-      bg: isHead ? "#19EBFF" : "#F3EEE3",
-      border: isHead ? {
-        fg: "red"
-      } : {
-        fg: "#F3EEE3"
-      }
+      bg: isHead ? "#19EBFF" : "#F3EEE3"
     }
   });
 };
 
 var Fruit = function Fruit(_ref6) {
   var x = _ref6.x,
-      y = _ref6.y;
+      y = _ref6.y,
+      size = _ref6.size;
   return /*#__PURE__*/_react["default"].createElement("box", {
-    top: "".concat(y * 10, "%"),
-    left: "".concat(x * 10, "%"),
-    width: "10%",
-    height: "10%",
-    border: "line",
+    top: "".concat(y * size, "%"),
+    left: "".concat(x * size, "%"),
+    width: "".concat(size, "%"),
+    height: "".concat(size, "%"),
     style: {
-      bg: "green",
-      border: {
-        fg: "green"
-      }
+      bg: "green"
     }
   });
 };
 
 var screen = _blessed["default"].screen({
-  autoPadding: true,
+  autoPadding: false,
   fastCSR: true,
   title: "Snake Game!"
 });
@@ -296,14 +293,23 @@ var screen = _blessed["default"].screen({
 screen.key(["escape", "q", "C-c"], function () {
   return process.exit(0);
 });
-var difficulty;
+var difficulty, size;
+var args = process.argv;
 
 try {
-  difficulty = process.argv[2].split("--")[1];
+  difficulty = args[args.findIndex(function (arg) {
+    return arg === "--difficulty";
+  }) + 1];
+  size = args[args.findIndex(function (arg) {
+    return arg === "--size";
+  }) + 1];
 } catch (e) {
+  console.log(e);
   difficulty = "hard";
+  size = 20;
 } finally {
   (0, _reactBlessed.render)( /*#__PURE__*/_react["default"].createElement(App, {
-    difficulty: difficulty
+    difficulty: difficulty,
+    size: size
   }), screen);
 }
