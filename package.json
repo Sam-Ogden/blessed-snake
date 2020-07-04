@@ -1,0 +1,31 @@
+{
+  "name": "blessed-snake",
+  "version": "0.0.1",
+  "description": "Nokia3310",
+  "main": "index.js",
+  "repository": {
+    "url": "https://github.com/sam-ogden"
+  },
+  "scripts": {
+    "start": "node index"
+  },
+  "bin": {
+    "blessed-snake": "./index.js"
+  },
+  "keywords": [
+    "snake",
+    "react",
+    "blessed"
+  ],
+  "author": "Samuel Ogden",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/core": "^7.10.4",
+    "@babel/preset-env": "^7.10.4",
+    "@babel/preset-react": "^7.10.4",
+    "@babel/register": "^7.10.4",
+    "blessed": "^0.1.81",
+    "react": "^16.13.1",
+    "react-blessed": "^0.6.2"
+  }
+}
