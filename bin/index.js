@@ -55,7 +55,7 @@ var ARROWS = {
 };
 var DIFFICULTY = {
   easy: 100,
-  normal: 50,
+  normal: 40,
   hard: 25,
   insane: 10,
   imacrazyperson: 5,
@@ -168,8 +168,6 @@ var App = function App(_ref3) {
   };
 
   var tick = function tick() {
-    // snake state variable never seems to change, so use the
-    // value passed in. Bug in react-blessed renderer?
     setSnake(function (s) {
       var died = hasDied(s, size);
       died && setGameOver(true);
@@ -322,7 +320,7 @@ var GameOver = function GameOver(_ref7) {
 
 var screen = _blessed["default"].screen({
   autoPadding: false,
-  fastCSR: true,
+  smartCSR: false,
   title: "Snake Game!"
 });
 
@@ -336,8 +334,8 @@ var difficultyIndex = args.findIndex(function (arg) {
 var sizeIndex = args.findIndex(function (arg) {
   return arg === "--size";
 });
-var difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "hard";
-var size = sizeIndex > -1 ? args[sizeIndex + 1] : 20;
+var difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "normal";
+var size = sizeIndex > -1 ? args[sizeIndex + 1] : 10;
 (0, _reactBlessed.render)( /*#__PURE__*/_react["default"].createElement(App, {
   difficulty: difficulty,
   size: size

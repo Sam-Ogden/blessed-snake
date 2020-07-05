@@ -16,7 +16,7 @@ const ARROWS = {
 
 const DIFFICULTY = {
   easy: 100,
-  normal: 50,
+  normal: 40,
   hard: 25,
   insane: 10,
   imacrazyperson: 5,
@@ -218,6 +218,6 @@ screen.key(["escape", "q", "C-c"], () => process.exit(0));
 const args = process.argv;
 const difficultyIndex = args.findIndex((arg) => arg === "--difficulty");
 const sizeIndex = args.findIndex((arg) => arg === "--size");
-const difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "hard";
-const size = sizeIndex > -1 ? args[sizeIndex + 1] : 20;
+const difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "normal";
+const size = sizeIndex > -1 ? args[sizeIndex + 1] : 10;
 render(<App difficulty={difficulty} size={size} />, screen);
