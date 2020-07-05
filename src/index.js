@@ -76,12 +76,12 @@ const App = ({ difficulty = "hard", size = 20 }) => {
     setGameOver(false);
     setFruit(randomLocation(size));
   };
+
   const tick = () => {
-    // snake state variable never seems to change, so use the
-    // value passed in. Bug in react-blessed renderer?
     setSnake((s) => {
       const died = hasDied(s, size);
       died && setGameOver(true);
+      died && clearTimeout(gameClock.current);
       const newSnake = [...s];
       const head = { ...s[s.length - 1] };
       const newHead = nextHead(head, direction);
@@ -98,16 +98,20 @@ const App = ({ difficulty = "hard", size = 20 }) => {
   };
 
   useEffect(() => {
-    clearInterval(gameClock.current);
-    gameClock.current = setInterval(
-      tick,
-      Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"])
-    );
+    if (!gameOver) {
+      clearInterval(gameClock.current);
+      gameClock.current = setInterval(
+        tick,
+        Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"])
+      );
+    }
     return () => clearInterval(gameClock.current);
-  }, [direction]);
+  }, [direction, gameOver]);
 
   const handleKeyPress = (_, { name }) =>
-    setDirection((direction) => ARROWS[name] || direction);
+    name === "enter"
+      ? restart()
+      : setDirection((direction) => ARROWS[name] || direction);
 
   return (
     <element
@@ -193,11 +197,11 @@ const Fruit = ({ x, y, size }) => {
 
 const GameOver = ({ restart, score }) => {
   return (
-    <box top='center' left='center'>
+    <box top='center' left='center' width='100%' height='100%'>
       GAME OVER - Score:
       <box top={1}>{score}</box>
       <button mouse top={2} height={50} width={"100%"} onPress={restart}>
-        -- Click to play again --
+        -- Press enter to play again --
       </button>
     </box>
   );
@@ -211,15 +215,9 @@ const screen = blessed.screen({
 
 screen.key(["escape", "q", "C-c"], () => process.exit(0));
 
-let difficulty, size;
 const args = process.argv;
-try {
-  difficulty = args[args.findIndex((arg) => arg === "--difficulty") + 1];
-  size = args[args.findIndex((arg) => arg === "--size") + 1];
-} catch (e) {
-  console.log(e);
-  difficulty = "hard";
-  size = 20;
-} finally {
-  render(<App difficulty={difficulty} size={size} />, screen);
-}
+const difficultyIndex = args.findIndex((arg) => arg === "--difficulty");
+const sizeIndex = args.findIndex((arg) => arg === "--size");
+const difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "hard";
+const size = sizeIndex > -1 ? args[sizeIndex + 1] : 20;
+render(<App difficulty={difficulty} size={size} />, screen);

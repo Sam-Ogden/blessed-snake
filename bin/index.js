@@ -173,6 +173,7 @@ var App = function App(_ref3) {
     setSnake(function (s) {
       var died = hasDied(s, size);
       died && setGameOver(true);
+      died && clearTimeout(gameClock.current);
 
       var newSnake = _toConsumableArray(s);
 
@@ -198,16 +199,19 @@ var App = function App(_ref3) {
   };
 
   (0, _react.useEffect)(function () {
-    clearInterval(gameClock.current);
-    gameClock.current = setInterval(tick, Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"]));
+    if (!gameOver) {
+      clearInterval(gameClock.current);
+      gameClock.current = setInterval(tick, Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"]));
+    }
+
     return function () {
       return clearInterval(gameClock.current);
     };
-  }, [direction]);
+  }, [direction, gameOver]);
 
   var handleKeyPress = function handleKeyPress(_, _ref4) {
     var name = _ref4.name;
-    return setDirection(function (direction) {
+    return name === "enter" ? restart() : setDirection(function (direction) {
       return ARROWS[name] || direction;
     });
   };
@@ -302,7 +306,9 @@ var GameOver = function GameOver(_ref7) {
       score = _ref7.score;
   return /*#__PURE__*/_react["default"].createElement("box", {
     top: "center",
-    left: "center"
+    left: "center",
+    width: "100%",
+    height: "100%"
   }, "GAME OVER - Score:", /*#__PURE__*/_react["default"].createElement("box", {
     top: 1
   }, score), /*#__PURE__*/_react["default"].createElement("button", {
@@ -311,7 +317,7 @@ var GameOver = function GameOver(_ref7) {
     height: 50,
     width: "100%",
     onPress: restart
-  }, "-- Click here to play again --"));
+  }, "-- Press enter to play again --"));
 };
 
 var screen = _blessed["default"].screen({
@@ -323,23 +329,16 @@ var screen = _blessed["default"].screen({
 screen.key(["escape", "q", "C-c"], function () {
   return process.exit(0);
 });
-var difficulty, size;
 var args = process.argv;
-
-try {
-  difficulty = args[args.findIndex(function (arg) {
-    return arg === "--difficulty";
-  }) + 1];
-  size = args[args.findIndex(function (arg) {
-    return arg === "--size";
-  }) + 1];
-} catch (e) {
-  console.log(e);
-  difficulty = "hard";
-  size = 20;
-} finally {
-  (0, _reactBlessed.render)( /*#__PURE__*/_react["default"].createElement(App, {
-    difficulty: difficulty,
-    size: size
-  }), screen);
-}
+var difficultyIndex = args.findIndex(function (arg) {
+  return arg === "--difficulty";
+});
+var sizeIndex = args.findIndex(function (arg) {
+  return arg === "--size";
+});
+var difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "hard";
+var size = sizeIndex > -1 ? args[sizeIndex + 1] : 20;
+(0, _reactBlessed.render)( /*#__PURE__*/_react["default"].createElement(App, {
+  difficulty: difficulty,
+  size: size
+}), screen);
