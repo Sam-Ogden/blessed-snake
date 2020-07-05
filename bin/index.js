@@ -320,7 +320,7 @@ var GameOver = function GameOver(_ref7) {
 
 var screen = _blessed["default"].screen({
   autoPadding: false,
-  smartCSR: false,
+  fastCSR: true,
   title: "Snake Game!"
 });
 

@@ -56,9 +56,7 @@ const hasDied = (snake, n) => {
     if (i === snake.length - 1) return false;
     return head.x === x && head.y === y;
   });
-  return (
-    ateSelf || ateSelf || head.x >= n || head.x < 0 || head.y >= n || head.y < 0
-  );
+  return ateSelf || head.x >= n || head.x < 0 || head.y >= n || head.y < 0;
 };
 
 const App = ({ difficulty = "hard", size = 20 }) => {
