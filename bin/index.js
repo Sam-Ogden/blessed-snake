@@ -17,12 +17,6 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 function _extends() { _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends.apply(this, arguments); }
 
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
 
 function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
@@ -54,12 +48,11 @@ var ARROWS = {
   d: "right"
 };
 var DIFFICULTY = {
-  easy: 100,
-  normal: 40,
-  hard: 25,
-  insane: 10,
-  imacrazyperson: 5,
-  catreflex: 3
+  easy: 1000,
+  normal: 400,
+  hard: 250,
+  insane: 100,
+  catreflex: 50
 };
 var initialSnake = [{
   x: 1,
@@ -120,10 +113,10 @@ var hasDied = function hasDied(snake, n) {
   var ateSelf = snake.some(function (_ref2, i) {
     var x = _ref2.x,
         y = _ref2.y;
-    if (i === snake.length - 1) return false;
-    return head.x === x && head.y === y;
+    return i !== snake.length - 1 && head.x === x && head.y === y;
   });
-  return ateSelf || ateSelf || head.x >= n || head.x < 0 || head.y >= n || head.y < 0;
+  var outOfBounds = head.x >= n || head.x < 0 || head.y >= n || head.y < 0;
+  return ateSelf || outOfBounds;
 };
 
 var App = function App(_ref3) {
@@ -167,30 +160,29 @@ var App = function App(_ref3) {
     setFruit(randomLocation(size));
   };
 
+  var handleDeath = function handleDeath() {
+    setGameOver(true);
+    clearTimeout(gameClock.current);
+  };
+
+  var handleAteFruit = function handleAteFruit() {
+    setFruit(function () {
+      return randomLocation(size);
+    });
+    setScore(function (s) {
+      return s + 1;
+    });
+  };
+
   var tick = function tick() {
     setSnake(function (s) {
-      var died = hasDied(s, size);
-      died && setGameOver(true);
-      died && clearTimeout(gameClock.current);
+      hasDied(s, size) && handleDeath();
 
       var newSnake = _toConsumableArray(s);
 
-      var head = _objectSpread({}, s[s.length - 1]);
-
-      var newHead = nextHead(head, direction);
+      var newHead = nextHead(s[s.length - 1], direction);
       var ateFruit = newHead.x === fruit.x && newHead.y === fruit.y;
-
-      if (ateFruit) {
-        setFruit(function () {
-          return randomLocation(size);
-        });
-        setScore(function (s) {
-          return s + 1;
-        });
-      } else {
-        newSnake.shift();
-      }
-
+      ateFruit ? handleAteFruit() : newSnake.shift();
       newSnake.push(newHead);
       return newSnake;
     });
@@ -199,7 +191,7 @@ var App = function App(_ref3) {
   (0, _react.useEffect)(function () {
     if (!gameOver) {
       clearInterval(gameClock.current);
-      gameClock.current = setInterval(tick, Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"]));
+      gameClock.current = setInterval(tick, 10 / size * (DIFFICULTY[difficulty] || DIFFICULTY["hard"]));
     }
 
     return function () {
@@ -268,35 +260,36 @@ var App = function App(_ref3) {
   }));
 };
 
+var getPositionProps = function getPositionProps(x, y, size) {
+  return {
+    top: "".concat(y * size, "%"),
+    left: "".concat(x * size, "%"),
+    width: "".concat(size, "%"),
+    height: "".concat(size, "%")
+  };
+};
+
 var BodyPart = function BodyPart(_ref5) {
   var x = _ref5.x,
       y = _ref5.y,
       isHead = _ref5.isHead,
       size = _ref5.size;
-  return /*#__PURE__*/_react["default"].createElement("box", {
-    top: "".concat(y * size, "%"),
-    left: "".concat(x * size, "%"),
-    width: "".concat(size, "%"),
-    height: "".concat(size, "%"),
+  return /*#__PURE__*/_react["default"].createElement("box", _extends({}, getPositionProps(x, y, size), {
     style: {
       bg: isHead ? "#19EBFF" : "#F3EEE3"
     }
-  });
+  }));
 };
 
 var Fruit = function Fruit(_ref6) {
   var x = _ref6.x,
       y = _ref6.y,
       size = _ref6.size;
-  return /*#__PURE__*/_react["default"].createElement("box", {
-    top: "".concat(y * size, "%"),
-    left: "".concat(x * size, "%"),
-    width: "".concat(size, "%"),
-    height: "".concat(size, "%"),
+  return /*#__PURE__*/_react["default"].createElement("box", _extends({}, getPositionProps(x, y, size), {
     style: {
       bg: "green"
     }
-  });
+  }));
 };
 
 var GameOver = function GameOver(_ref7) {

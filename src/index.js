@@ -15,12 +15,11 @@ const ARROWS = {
 };
 
 const DIFFICULTY = {
-  easy: 100,
-  normal: 40,
-  hard: 25,
-  insane: 10,
-  imacrazyperson: 5,
-  catreflex: 3,
+  easy: 1000,
+  normal: 400,
+  hard: 250,
+  insane: 100,
+  catreflex: 50,
 };
 
 const initialSnake = [
@@ -52,11 +51,11 @@ const randomLocation = (n) => {
 
 const hasDied = (snake, n) => {
   const head = snake[snake.length - 1];
-  const ateSelf = snake.some(({ x, y }, i) => {
-    if (i === snake.length - 1) return false;
-    return head.x === x && head.y === y;
-  });
-  return ateSelf || head.x >= n || head.x < 0 || head.y >= n || head.y < 0;
+  const ateSelf = snake.some(
+    ({ x, y }, i) => i !== snake.length - 1 && head.x === x && head.y === y
+  );
+  const outOfBounds = head.x >= n || head.x < 0 || head.y >= n || head.y < 0;
+  return ateSelf || outOfBounds;
 };
 
 const App = ({ difficulty = "hard", size = 20 }) => {
@@ -75,21 +74,23 @@ const App = ({ difficulty = "hard", size = 20 }) => {
     setFruit(randomLocation(size));
   };
 
+  const handleDeath = () => {
+    setGameOver(true);
+    clearTimeout(gameClock.current);
+  };
+
+  const handleAteFruit = () => {
+    setFruit(() => randomLocation(size));
+    setScore((s) => s + 1);
+  };
+
   const tick = () => {
     setSnake((s) => {
-      const died = hasDied(s, size);
-      died && setGameOver(true);
-      died && clearTimeout(gameClock.current);
+      hasDied(s, size) && handleDeath();
       const newSnake = [...s];
-      const head = { ...s[s.length - 1] };
-      const newHead = nextHead(head, direction);
+      const newHead = nextHead(s[s.length - 1], direction);
       const ateFruit = newHead.x === fruit.x && newHead.y === fruit.y;
-      if (ateFruit) {
-        setFruit(() => randomLocation(size));
-        setScore((s) => s + 1);
-      } else {
-        newSnake.shift();
-      }
+      ateFruit ? handleAteFruit() : newSnake.shift();
       newSnake.push(newHead);
       return newSnake;
     });
@@ -100,7 +101,7 @@ const App = ({ difficulty = "hard", size = 20 }) => {
       clearInterval(gameClock.current);
       gameClock.current = setInterval(
         tick,
-        Math.pow(size, 0.5) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"])
+        (10 / size) * (DIFFICULTY[difficulty] || DIFFICULTY["hard"])
       );
     }
     return () => clearInterval(gameClock.current);
@@ -165,13 +166,17 @@ const App = ({ difficulty = "hard", size = 20 }) => {
   );
 };
 
+const getPositionProps = (x, y, size) => ({
+  top: `${y * size}%`,
+  left: `${x * size}%`,
+  width: `${size}%`,
+  height: `${size}%`,
+});
+
 const BodyPart = ({ x, y, isHead, size }) => {
   return (
     <box
-      top={`${y * size}%`}
-      left={`${x * size}%`}
-      width={`${size}%`}
-      height={`${size}%`}
+      {...getPositionProps(x, y, size)}
       style={{
         bg: isHead ? "#19EBFF" : "#F3EEE3",
       }}
@@ -182,10 +187,7 @@ const BodyPart = ({ x, y, isHead, size }) => {
 const Fruit = ({ x, y, size }) => {
   return (
     <box
-      top={`${y * size}%`}
-      left={`${x * size}%`}
-      width={`${size}%`}
-      height={`${size}%`}
+      {...getPositionProps(x, y, size)}
       style={{
         bg: "green",
       }}

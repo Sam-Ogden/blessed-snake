@@ -14,7 +14,6 @@ npx blessed-snake --difficulty hard --size 20
 1. `--difficulty normal`
 1. `--difficulty hard`
 1. `--difficulty insane`
-1. `--difficulty imacrazyperson`
 1. `--difficulty catreflex`
 
 ### Size options
