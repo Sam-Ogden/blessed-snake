@@ -48,9 +48,9 @@ var ARROWS = {
   d: "right"
 };
 var DIFFICULTY = {
-  easy: 1000,
-  normal: 400,
-  hard: 250,
+  easy: 500,
+  normal: 250,
+  hard: 200,
   insane: 100,
   catreflex: 50
 };
@@ -329,6 +329,7 @@ var sizeIndex = args.findIndex(function (arg) {
 });
 var difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "normal";
 var size = sizeIndex > -1 ? args[sizeIndex + 1] : 10;
+console.log("\n\n _______  __    _  _______  ___   _  _______    _______  _______  __   __  _______ \n|       ||  |  | ||   _   ||   | | ||       |  |       ||   _   ||  |_|  ||       |\n|  _____||   |_| ||  |_|  ||   |_| ||    ___|  |    ___||  |_|  ||       ||    ___|\n| |_____ |       ||       ||      _||   |___   |   | __ |       ||       ||   |___ \n|_____  ||  _    ||       ||     |_ |    ___|  |   ||  ||       ||       ||    ___|\n _____| || | |   ||   _   ||    _  ||   |___   |   |_| ||   _   || ||_|| ||   |___ \n|_______||_|  |__||__| |__||___| |_||_______|  |_______||__| |__||_|   |_||_______|\n\n    --difficulty easy|normal|hard|insane|catreflex\n\n    --size n\n\n    Resize the terminal to be square\n");
 (0, _reactBlessed.render)( /*#__PURE__*/_react["default"].createElement(App, {
   difficulty: difficulty,
   size: size

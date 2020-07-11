@@ -15,9 +15,9 @@ const ARROWS = {
 };
 
 const DIFFICULTY = {
-  easy: 1000,
-  normal: 400,
-  hard: 250,
+  easy: 500,
+  normal: 250,
+  hard: 200,
   insane: 100,
   catreflex: 50,
 };
@@ -220,4 +220,21 @@ const difficultyIndex = args.findIndex((arg) => arg === "--difficulty");
 const sizeIndex = args.findIndex((arg) => arg === "--size");
 const difficulty = difficultyIndex > -1 ? args[difficultyIndex + 1] : "normal";
 const size = sizeIndex > -1 ? args[sizeIndex + 1] : 10;
+console.log(`
+
+ _______  __    _  _______  ___   _  _______    _______  _______  __   __  _______ 
+|       ||  |  | ||   _   ||   | | ||       |  |       ||   _   ||  |_|  ||       |
+|  _____||   |_| ||  |_|  ||   |_| ||    ___|  |    ___||  |_|  ||       ||    ___|
+| |_____ |       ||       ||      _||   |___   |   | __ |       ||       ||   |___ 
+|_____  ||  _    ||       ||     |_ |    ___|  |   ||  ||       ||       ||    ___|
+ _____| || | |   ||   _   ||    _  ||   |___   |   |_| ||   _   || ||_|| ||   |___ 
+|_______||_|  |__||__| |__||___| |_||_______|  |_______||__| |__||_|   |_||_______|
+
+    --difficulty easy|normal|hard|insane|catreflex
+
+    --size n
+
+    Resize the terminal to be square
+`);
+
 render(<App difficulty={difficulty} size={size} />, screen);
